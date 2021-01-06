@@ -1,0 +1,9 @@
+spring:
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/alibaba
+server:
+  port: 8848
+
+CommBeanleaf:
+  prefix=classpath:/templates/:

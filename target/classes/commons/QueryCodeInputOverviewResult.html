@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<title>请选择</title>
+</head>
+<body class="interface" onload="loadPage()" style="BORDER: #3D72D7 1px solid">
+<html>
+<form action="/processCodeInput.do?actionType=queryContinue" >
+  <span id=cond style="display:none">
+  	<textarea name=fieldIndex><%=request.getParameter("fieldIndex")%></textarea>
+	  <textarea name=fieldValue><%=request.getParameter("fieldValue")%></textarea>
+	  <textarea name=codeMethod><%=request.getParameter("codeMethod")%></textarea>
+	  <textarea name=codeType><%=request.getParameter("codeType")%></textarea> 
+	  <textarea name=codeRelation><%=request.getParameter("codeRelation")%></textarea>
+	  <textarea name=isClear><%=request.getParameter("isClear")%></textarea> 
+	  <textarea name=otherCondition><%=request.getParameter("otherCondition")%></textarea>
+	  <textarea name=callBackMethod><%=request.getParameter("callBackMethod")%></textarea> 
+	  <textarea name=getDataMethod><%=request.getParameter("getDataMethod")%></textarea>
+	  <textarea name=pageNo><%=request.getParameter("pageNo")%></textarea> 
+	  <textarea name=rowsPerPage><%=request.getParameter("rowsPerPage")%></textarea>
+	  <textarea name=elementOrder><%=request.getParameter("elementOrder")%></textarea>
+	  <textarea name=elementLength><%=request.getParameter("elementLength")%></textarea>
+  </span>
+  <table class="common" cellpadding="2" cellspacing="0" align="center" style="display:" id="resultTab" >
+    <tr>
+      <td width=50% align="center"><input class="button" type="button" name="SelectIt" value="确定"
+        onclick="setFieldValue()"></td>
+      <td width=50% align="center"><input name="CancelIt" class="button" type="button" value="取消"
+        onclick="cancelFieldValue()"></td>
+    </tr>
+    <tr>
+      <td colspan=2 align="center"><select name="codeselect" class="one" size=20 style="width:100%" onclick ="setFieldValue()">
+
+        <option value="1111">11111111111</option>
+      </select></td>
+    </tr>
+      <tr>
+          <td colspan="2" align="center"><span name="fm" objectName="fm"/></td>
+      </tr>
+  </table>
+    </form>
+</html>
+<script language='javascript'>
+    var FIELD_SEPARATOR = "_FIELD_SEPARATOR_";   //字段之间的分割符
+
+    function loadPage(){
+    	//clearFieldValue();
+        if(fm.getDataMethod.value!=""){
+            fm.codeselect.innerText=eval("parent." + fm.getDataMethod.value);
+        }
+        //resultTab.style.display=""; 
+        //if(fm.codeselect.options.length>=1){
+        //    fm.codeselect.selectedIndex=0;
+        //} 
+        resultTab.scrollIntoView(false);
+        //setFocus(fm.codeselect);
+    }
+    function setFieldValue() {
+        inCodeQuery = false;
+        var elementOrder = parseInt(document.forms[0].elementOrder.value, 10);
+        var elementLength = parseInt(document.forms[0].elementLength.value, 10);
+
+      /*  var callerWindowObj = window.dialogArguments;
+        var openerFm = callerWindowObj.document.forms[0];*/
+        var openerFm = window.document.forms[0];
+        var relations = new Array();
+        if (document.forms[0].codeRelation.value.indexOf(",") > -1) {
+            relations = document.forms[0].codeRelation.value.split(",");
+        } else {
+            relations[0] = document.forms[0].codeRelation.value;
+        }
+        var fieldIndex = parseInt(document.forms[0].fieldIndex.value, 10);
+
+        if (document.forms[0].codeselect.selectedIndex < 0) {
+            document.forms[0].codeselect.selectedIndex = 0;
+            return false;
+        }
+        var value = "";
+        var rowValues = new Array();
+        var values = new Array();
+        var selectedCount = 0;
+        for (var i = 0; i < document.forms[0].codeselect.length; i++) {
+            if (document.forms[0].codeselect.options[i].selected == true) {
+                rowValues = new Array();
+                var selectedValue = document.forms[0].codeselect.options[i].value;
+                if (selectedValue.indexOf(FIELD_SEPARATOR) > -1) {
+                    rowValues = selectedValue.split(FIELD_SEPARATOR);
+                } else {
+                    rowValues[0] = selectedValue;
+                }
+                values[selectedCount++] = rowValues;
+            }
+        }
+        var relationsCount = relations.length;
+        for (var i = 0; i < relationsCount; i++) {
+            /*relations[i] = trim(relations[i]);*/
+            if(relations[i]==null||relations[i]==""){
+                continue;
+            }
+            value = values[0][i];
+            if(i >= values[0].length) {
+                break;
+            }
+            for (var j = 1; j < selectedCount; j++) {
+                if (i >= values[j].length) {
+                    value = value + ";" + values[j][values.length - 1];
+                } else {
+                    value = value + ";" + values[j][i];
+                }
+            }
+            var field = null;
+            var relation = parseInt(relations[i], 10);
+            if(isNaN(relation)){
+                field = eval("openerFm."+relations[i]);
+                if(elementLength>1){
+                    field = field[elementOrder];
+                }
+            }else{
+                field = openerFm.elements[fieldIndex + relation];
+            }
+            field.value=value;
+        }
+        window.close();
+    }
+    function cancelFieldValue() {
+        inCodeQuery = false;
+        var elementOrder = parseInt(document.forms[0].elementOrder.value, 10);
+        var elementLength = parseInt(document.forms[0].elementLength.value, 10);
+       /* var callerWindowObj = window.dialogArguments;
+        var openerFm = callerWindowObj.document.forms[0];*/
+        var openerFm = window.document.forms[0];
+        if (document.forms[0].isClear.value == "Y"||document.forms[0].isClear.value == "y") {
+            var relations = new Array();
+            if (document.forms[0].codeRelation.value.indexOf(",") > -1) {
+                relations = document.forms[0].codeRelation.value.split(",");
+            } else {
+                relations[0] = document.forms[0].codeRelation.value;
+            }
+            var fieldIndex = parseInt(document.forms[0].fieldIndex.value, 10);
+            var relationsCount = relations.length;
+            for (var i = 0; i < relationsCount; i++) {
+                relations[i] = trim(relations[i]);
+                if(relations[i]==null||relations[i]==""){
+                    continue;
+                }
+                var field = null;
+                var relation = parseInt(relations[i], 10);
+                if(isNaN(relation)){
+                    field = eval("openerFm."+relations[i]);
+                    if(elementLength>1){
+                        field = field[elementOrder];
+                    }
+                }else{
+                    field = openerFm.elements[fieldIndex + relation];
+                }
+                field.value="";
+            }
+        }
+
+        window.close();
+    }
+    function fieldOnKeyPress() {
+        var charCode = window.event.keyCode;
+        if (charCode == 13) { //enter
+            setFieldValue();
+        } else if (charCode == 27) { //escape
+            cancelFieldValue();
+        }
+    }
+</script>
+</body>
+</html>
