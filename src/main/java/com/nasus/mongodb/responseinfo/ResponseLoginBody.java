@@ -1,18 +1,13 @@
 package com.nasus.mongodb.responseinfo;
 
 import com.nasus.mongodb.vo.LoginInfoVo;
+import lombok.Data;
 
 /**
  * Created by Royal on 2020/5/18
  */
+@Data
 public class ResponseLoginBody {
     private LoginInfoVo resultinfo;
 
-    public LoginInfoVo getResultinfo() {
-        return resultinfo;
-    }
-
-    public void setResultinfo(LoginInfoVo resultinfo) {
-        this.resultinfo = resultinfo;
-    }
 }

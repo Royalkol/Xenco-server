@@ -9,7 +9,5 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface XencoAppInfoRepository extends MongoRepository<XencoAppInfo, String> {
-
-
 }
 

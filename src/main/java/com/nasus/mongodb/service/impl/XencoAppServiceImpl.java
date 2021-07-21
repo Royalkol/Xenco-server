@@ -1,12 +1,10 @@
 package com.nasus.mongodb.service.impl;
 
 import com.nasus.mongodb.entity.XencoAppInfo;
-import com.nasus.mongodb.requestinfo.Head;
-import com.nasus.mongodb.requestinfo.RequestInfo;
-import com.nasus.mongodb.requestinfo.RequestLoginInfo;
-import com.nasus.mongodb.requestinfo.RequestPhoneInfo;
+import com.nasus.mongodb.requestinfo.*;
 import com.nasus.mongodb.responseinfo.ResponseHead;
 import com.nasus.mongodb.responseinfo.ResponseInfo;
+import com.nasus.mongodb.service.DistributionService;
 import com.nasus.mongodb.service.XencoAppService;
 import com.nasus.mongodb.util.ConstantUtil;
 import com.nasus.mongodb.util.Md5Util;
@@ -24,8 +22,14 @@ public class XencoAppServiceImpl implements XencoAppService {
 
     public static final String USER_LOGIN = "LOGIN";
     public static final String USER_TRAIN = "TRAIN_NUMBER";
+    public static final String USER_DISTRIBUTION = "DISTRIBUTION";
+
     @Autowired
     private UserServiceImpl userService;
+
+    @Autowired
+    private DistributionServiceImpl distributionService;
+
 
     @Override
     public String checkAppAuth(Head requestHead) {
@@ -115,7 +119,12 @@ public class XencoAppServiceImpl implements XencoAppService {
 //
 //            }else if(？.equals(serviceType)){//治疗信息保存接口
 //
+            }else if(USER_DISTRIBUTION.equals(serviceType)){//配气接口
+                RequestDistributionInfo requestDistributionInfo=requestInfo.getBody().getDistributioninfo();
+//                distributionService.addDistribution();
+                body = distributionService.getDistributionTime(requestDistributionInfo);
             }
+
             ResponseHead responseHead = new ResponseHead();
             responseHead.setSys_code(requestHead.getSys_code());
             responseHead.setError_code(errorCode);
